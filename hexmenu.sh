@@ -1,5 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # HEX MENU - OpenSSL random hexadecimal generator
+VERSION="1.1.0"
+RAW_URL="https://raw.githubusercontent.com/khahdihdz/hexmenu/main/hexmenu.sh"
 set -u
 
 PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
@@ -31,6 +33,57 @@ install_menu() {
   fi
   chmod 755 "$COMMAND"
   echo -e "${G}Cài đặt thành công. Gõ hexmenu để mở menu.${W}"
+}
+
+update_menu() {
+  if [[ ! -f "$COMMAND" ]]; then
+    echo -e "${Y}Chưa cài lệnh hexmenu. Hãy chọn mục 2 để cài trước.${W}"
+    return 1
+  fi
+
+  if ! command -v curl >/dev/null 2>&1; then
+    echo -e "${Y}Đang cài curl để cập nhật...${W}"
+    pkg install -y curl || return 1
+  fi
+
+  local tmp remote_version
+  tmp=$(mktemp) || return 1
+  echo "Đang kiểm tra phiên bản mới..."
+  if ! curl -fsSL "$RAW_URL" -o "$tmp"; then
+    rm -f "$tmp"
+    echo -e "${R}Không thể tải bản cập nhật. Kiểm tra kết nối mạng.${W}"
+    return 1
+  fi
+
+  if ! bash -n "$tmp"; then
+    rm -f "$tmp"
+    echo -e "${R}Bản cập nhật không hợp lệ, đã hủy.${W}"
+    return 1
+  fi
+
+  remote_version=$(grep -m1 '^VERSION=' "$tmp" | cut -d '"' -f2)
+  if [[ -z "$remote_version" ]]; then
+    rm -f "$tmp"
+    echo -e "${R}Không đọc được phiên bản từ máy chủ.${W}"
+    return 1
+  fi
+
+  if [[ "$remote_version" == "$VERSION" ]]; then
+    rm -f "$tmp"
+    echo -e "${G}Bạn đang sử dụng phiên bản mới nhất (v$VERSION).${W}"
+    return 0
+  fi
+
+  chmod 755 "$tmp"
+  if ! mv -f "$tmp" "$COMMAND"; then
+    rm -f "$tmp"
+    echo -e "${R}Không thể ghi bản cập nhật vào $COMMAND.${W}"
+    return 1
+  fi
+
+  echo -e "${G}Đã cập nhật HEX MENU: v$VERSION → v$remote_version.${W}"
+  echo "Đang khởi động lại menu..."
+  exec "$COMMAND"
 }
 
 uninstall_menu() {
@@ -93,6 +146,7 @@ generate_hex() {
 
 if [[ "${1:-}" == "--install" ]]; then install_menu; exit $?; fi
 if [[ "${1:-}" == "--uninstall" ]]; then uninstall_menu; exit $?; fi
+if [[ "${1:-}" == "--update" ]]; then update_menu; exit $?; fi
 if [[ "${1:-}" == "--help" ]]; then
   echo "HEX MENU: $0 [--install|--uninstall|--help]"
   exit 0
@@ -110,7 +164,9 @@ while true; do
   echo "2. Cài lệnh mở menu nhanh"
   echo "3. Gỡ lệnh mở menu nhanh"
   echo "4. Kiểm tra / cài OpenSSL"
+  echo "5. Kiểm tra / cập nhật phiên bản mới"
   echo "0. Thoát"
+  echo "Phiên bản: v$VERSION"
   echo
   read -r -p "Lựa chọn: " option
   case "$option" in
@@ -118,6 +174,7 @@ while true; do
     2) install_menu; pause ;;
     3) uninstall_menu; pause ;;
     4) ensure_openssl && openssl version; pause ;;
+    5) update_menu; pause ;;
     0) exit 0 ;;
     *) echo -e "${R}Lựa chọn không hợp lệ.${W}"; sleep 1 ;;
   esac
