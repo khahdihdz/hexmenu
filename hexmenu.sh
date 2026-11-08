@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # HEX MENU - OpenSSL random hexadecimal generator
-VERSION="1.1.0"
+VERSION="1.1.1"
 RAW_URL="https://raw.githubusercontent.com/khahdihdz/hexmenu/main/hexmenu.sh"
 set -u
 
@@ -8,7 +8,7 @@ PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 BIN_DIR="$PREFIX/bin"
 COMMAND="$BIN_DIR/hexmenu"
 
-C='\033[0;36m'; G='\033[0;32m'; Y='\033[1;33m'; R='\033[0;31m'; W='\033[0m'
+C=$'\033[0;36m'; G=$'\033[0;32m'; Y=$'\033[1;33m'; R=$'\033[0;31m'; W=$'\033[0m'
 
 pause() { printf '\n'; read -r -p "Nhấn Enter để tiếp tục..." _; }
 
