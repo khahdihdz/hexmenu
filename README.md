@@ -27,6 +27,16 @@ Sau khi cài, mở menu bằng:
 hexmenu
 ```
 
+## Cập nhật
+
+Chọn **5. Kiểm tra / cập nhật phiên bản mới** trong menu, hoặc chạy trực tiếp:
+
+```bash
+hexmenu --update
+```
+
+Script tải bản mới nhất từ nhánh `main`, kiểm tra cú pháp Bash trước khi thay thế. Nếu đã ở phiên bản mới nhất, script sẽ thông báo và không ghi đè file.
+
 ## Chạy không cần cài lệnh nhanh
 
 ```bash
