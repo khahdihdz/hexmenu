@@ -5,7 +5,6 @@ set -u
 PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 BIN_DIR="$PREFIX/bin"
 COMMAND="$BIN_DIR/hexmenu"
-REPO_RAW="https://raw.githubusercontent.com/khahdihdz/hexmenu/main"
 
 C='\033[0;36m'; G='\033[0;32m'; Y='\033[1;33m'; R='\033[0;31m'; W='\033[0m'
 
@@ -13,7 +12,7 @@ pause() { printf '\n'; read -r -p "Nhấn Enter để tiếp tục..." _; }
 
 ensure_openssl() {
   if ! command -v openssl >/dev/null 2>&1; then
-    echo -e "${Y}Chưa có OpenSSL. Đang cài đặt...\${W}"
+    echo -e "${Y}Chưa có OpenSSL. Đang cài đặt...${W}"
     pkg install -y openssl || return 1
   fi
 }
